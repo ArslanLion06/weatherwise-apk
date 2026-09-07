@@ -1,0 +1,4 @@
+kivy
+requests
+openai
+pyobjc; sys_platform == "darwin"
