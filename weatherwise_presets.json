@@ -1,0 +1,23 @@
+[
+  {
+    "name": "WIGAN → LONDON (Bus)",
+    "origin": "WIGAN",
+    "dest": "LONDON",
+    "mode": "Travel mode: Bus",
+    "time": "16:00"
+  },
+  {
+    "name": "MANCHESTER → LONDON (Bus)",
+    "origin": "MANCHESTER",
+    "dest": "LONDON",
+    "mode": "Travel mode: Bus",
+    "time": "17.00"
+  },
+  {
+    "name": "WIGAN → LONDON (Driving)",
+    "origin": "WIGAN",
+    "dest": "LONDON",
+    "mode": "Travel mode: Driving",
+    "time": "16:00"
+  }
+]
