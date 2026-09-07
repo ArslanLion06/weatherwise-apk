@@ -1,4 +1,4 @@
 kivy
 requests
 openai
-pyobjc; sys_platform == "darwin"
+pyobjc-framework-Cocoa; sys_platform == "darwin"
