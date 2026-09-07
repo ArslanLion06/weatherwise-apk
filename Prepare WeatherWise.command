@@ -3,6 +3,15 @@ set -e
 APP_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$APP_DIR"
 
+# Once this setup script has been explicitly allowed through macOS Gatekeeper,
+# clear the download-quarantine flag from these two local scripts only. This
+# avoids a second Gatekeeper prompt when launching WeatherWise.
+if command -v xattr >/dev/null 2>&1; then
+  xattr -d com.apple.quarantine "$APP_DIR/Prepare WeatherWise.command" 2>/dev/null || true
+  xattr -d com.apple.quarantine "$APP_DIR/Launch WeatherWise Alarm.command" 2>/dev/null || true
+fi
+chmod +x "$APP_DIR/Prepare WeatherWise.command" "$APP_DIR/Launch WeatherWise Alarm.command" 2>/dev/null || true
+
 if [[ ! -f .env ]]; then
   cp .env.example .env
   chmod 600 .env
