@@ -11,7 +11,7 @@
     "origin": "MANCHESTER",
     "dest": "LONDON",
     "mode": "Travel mode: Bus",
-    "time": "17.00"
+    "time": "17:00"
   },
   {
     "name": "WIGAN → LONDON (Driving)",
