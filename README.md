@@ -1,57 +1,111 @@
-# WeatherWise Alarm, secured revision
+# WeatherWise Alarm
 
-WeatherWise calculates a wake-up and leave-by time from the required arrival time, journey duration, delays, preparation time and weather. This revision keeps those calculations deterministic and adds an optional OpenAI explanation layer.
+A Python project for planning wake-up and departure times around an arrival deadline, journey duration, preparation time and weather.
 
-## Security changes
+Developed by [Arslan Yalcin](https://github.com/ArslanLion06) as part of my undergraduate Computing work and now being revisited for further development.
 
-Real API credentials have been removed from the Python source and launcher. WeatherWise now reads credentials from operating-system environment variables or a local `.env` file. `.env` is excluded by `.gitignore`.
+## Project status
 
-The credentials found in the previous source and launcher should be treated as exposed if those files were ever committed, shared, backed up publicly or pushed to GitHub. Revoke or rotate them with the relevant providers before reusing the project.
+**Development prototype. The current committed application cannot start as written.** During repository validation, its compressed Python payload failed to decompress. Restoring the original readable source is the first development priority. Setup below prepares the environment, but does not resolve this application error.
 
-## First setup on macOS
+This is the main WeatherWise project repository. The related [weatherwiseAlarm-apk repository](https://github.com/ArslanLion06/weatherwiseAlarm-apk) currently contains no application source or release.
 
-1. Put this whole folder somewhere permanent, for example `~/Desktop/WeatherWise`.
-2. In Terminal, open the folder and create the private settings file:
+Despite the historical repository name, this tree provides Python files and macOS launch scripts. There is no published Android APK or Android build configuration here.
 
-   `cp .env.example .env`
+## Purpose and approach
 
-3. Restrict the file permissions:
+WeatherWise explores how a decision-support application can help a user plan when to wake up and leave for a journey.
 
-   `chmod 600 .env`
+The existing project documentation describes timing calculations based on the user's arrival deadline, preparation time, journey duration, traffic delays and weather. It also describes an optional AI explanation requested through a **Get AI advice** button. Calculations are intended to remain independent of the AI response.
 
-4. Open `.env` in a text editor and add the new/reissued credentials for the services you use. Put your OpenAI key next to `OPENAI_API_KEY=`. Do not send that key in chat or commit it to GitHub.
-5. Install dependencies into the Python environment used by WeatherWise:
+These describe the intended application behaviour. End-to-end verification is pending restoration of the readable source.
 
-   `python3 -m pip install -r requirements.txt`
+## Technologies
 
-   If you prefer a project-local environment:
+- Python and Kivy for the application and interface.
+- Requests for service calls.
+- OpenAI Python SDK for optional AI explanations.
+- Cocoa bindings for macOS, included through a platform-specific dependency.
 
-   `python3 -m venv .venv`
+The dependency versions are not pinned. A tested Python version and supported operating-system matrix have not yet been recorded.
 
-   `source .venv/bin/activate`
+## Prepare the environment on macOS
 
-   `python -m pip install -r requirements.txt`
+Install Python 3 with `venv` support and Git, then open Terminal:
 
-6. Double-click `Launch WeatherWise Alarm.command`.
+```bash
+git clone https://github.com/ArslanLion06/weatherwise-apk.git
+cd weatherwise-apk
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+cp -n .env.example .env
+chmod 600 .env
+open -a TextEdit .env
+```
 
-## OpenAI feature
+Keep an existing `.env` file rather than overwriting its values. Add credentials only for the services you intend to use.
 
-The OpenAI call is manual. WeatherWise sends the current calculated plan only when **Get AI advice** is pressed. The AI is instructed to explain the existing plan, not replace or invent journey calculations. The default model is `gpt-5.6-luna`, which can be changed through `OPENAI_MODEL` in `.env`.
+The repository also includes `Prepare WeatherWise.command`, which creates the local environment, installs dependencies and opens the settings file. The manual instructions above show the preparation steps explicitly.
 
-## Correctness fixes in this revision
+### Configuration
 
-- Removed hardcoded credentials from Python and the launcher.
-- Fixed traffic double-counting in TomTom and Google route calculations. Traffic-adjusted journey duration was previously being counted and then the traffic delay was added again.
-- Removed the fixed 30-minute Friday/Saturday/Sunday delay because live/predicted traffic data already handles journey conditions.
-- Weather now shows as unavailable when the weather API is not configured or fails. It no longer substitutes made-up default conditions.
-- Fixed Monday-first alignment in the calendar picker.
-- Added an optional OpenAI plan explanation without making alarm calculations depend on AI availability.
-- Made the launcher portable by running relative to its own folder and preferring a local `.venv`.
+| Variable | Service or purpose |
+|---|---|
+| `TOMTOM_API_KEY` | TomTom routing and traffic |
+| `OPENWEATHER_API_KEY` | Weather data |
+| `GOOGLE_MAPS_API_KEY` | Google Maps routing |
+| `RAIL_ACCESS_TOKEN` | Rail service token, provider setup needs documentation |
+| `TRANSPORT_APP_ID`, `TRANSPORT_APP_KEY` | Transport service credentials, provider setup needs documentation |
+| `OPENAI_API_KEY` | Optional AI explanations |
+| `OPENAI_MODEL` | Model selection for AI explanations |
 
-## GitHub rule
+Required combinations of transport credentials and behaviour when credentials are absent still need verification. Use a model available to your API account. API services may require separate accounts and billing.
 
-Before committing, run:
+### Launch after the source is restored
 
-`git status`
+```bash
+.venv/bin/python3 weatherwise_alarm_new_ui.py
+```
 
-Make sure `.env` is not listed. Only `.env.example` should be committed.
+For the macOS launcher:
+
+```bash
+chmod +x "Launch WeatherWise Alarm.command"
+./"Launch WeatherWise Alarm.command"
+```
+
+The launcher requires both the project-local `.venv` and `.env`. Installing packages into an unrelated Python environment will not satisfy it.
+
+## Repository guide
+
+| File | Purpose |
+|---|---|
+| `weatherwise_alarm_new_ui.py` | Current application wrapper, pending readable-source recovery |
+| `weatherwise_presets.json` | Saved preset data |
+| `requirements.txt` | Python dependencies |
+| `.env.example` | Configuration template without credentials |
+| `Prepare WeatherWise.command` | macOS environment preparation |
+| `Launch WeatherWise Alarm.command` | macOS launcher |
+| [CHANGELOG.md](CHANGELOG.md) | Previously documented revision changes |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Development and portfolio priorities |
+
+## Security and privacy
+
+Keep real credentials in a private local configuration file. Do not commit `.env`, tokens or API keys. Earlier project documentation reports credentials in previous source or launchers. Any such credentials that were shared must be revoked or rotated with their providers.
+
+The documented AI feature sends the current plan when the user requests advice. Actual payload fields and other service data flows must be checked after source recovery. Use non-personal locations in public demonstrations.
+
+## Demonstration and validation
+
+Screenshots and a demonstration recording are not yet included. They will be captured from the restored application using example data.
+
+No automated tests are currently included. Priority checks are timing arithmetic, traffic-delay handling, dates crossing midnight, unavailable APIs and optional AI failure. No claim of Android compatibility or production readiness is made.
+
+## Development context
+
+This project connects my Computing studies with practical journey-planning problems. The next portfolio update will explain implementation decisions and individual contributions against the restored source.
+
+## Licence
+
+No licence has been selected for this repository. Reuse terms will be documented when a licence is chosen.
